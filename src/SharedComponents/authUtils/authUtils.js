@@ -1,3 +1,4 @@
+// comments are written here
 export const logoutUser = (setIsLoggedIn, setRole, navigate) => {
   sessionStorage.clear();
   setIsLoggedIn(false);
@@ -10,9 +11,30 @@ export const loginUser = async (email, password, onLogin, navigate) => {
 
   // LOCAL BYPASS - Dummy credentials for local testing
   const DUMMY_CREDENTIALS = [
-    { email: "admin@local.com", password: "admin123", role: "SADMIN", firstName: "Admin", lastName: "User", id: "1" },
-    { email: "hr@local.com", password: "hr123", role: "HR", firstName: "HR", lastName: "Manager", id: "2" },
-    { email: "employee@local.com", password: "emp123", role: "EMPLOYEE", firstName: "Test", lastName: "Employee", id: "3" },
+    {
+      email: "admin@local.com",
+      password: "admin123",
+      role: "SADMIN",
+      firstName: "Admin",
+      lastName: "User",
+      id: "1",
+    },
+    {
+      email: "hr@local.com",
+      password: "hr123",
+      role: "HR",
+      firstName: "HR",
+      lastName: "Manager",
+      id: "2",
+    },
+    {
+      email: "employee@local.com",
+      password: "emp123",
+      role: "EMPLOYEE",
+      firstName: "Test",
+      lastName: "Employee",
+      id: "3",
+    },
   ];
 
   // Check if credentials match dummy credentials
@@ -63,19 +85,28 @@ export const loginUser = async (email, password, onLogin, navigate) => {
 
     // ✅ Fetch user-company roles using userId
     const userId = id;
-    const companyResponse = await fetch(`${apiUrl}/user-company/user/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+    const companyResponse = await fetch(
+      `${apiUrl}/user-company/user/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
 
     if (companyResponse.ok) {
       const companies = await companyResponse.json();
-      const defaultCompany = companies.find((item) => item.defaultCompany === "true");
+      const defaultCompany = companies.find(
+        (item) => item.defaultCompany === "true"
+      );
 
       if (defaultCompany) {
         sessionStorage.setItem("defaultCompanyId", defaultCompany.companyId);
-      } else if (role !== "SADMIN" && role !== "EMPLOYEE" && role !== "PROSPECT") {
+      } else if (
+        role !== "SADMIN" &&
+        role !== "EMPLOYEE" &&
+        role !== "PROSPECT"
+      ) {
         return "No default company assigned. Please contact admin.";
       }
     } else {
@@ -93,7 +124,6 @@ export const loginUser = async (email, password, onLogin, navigate) => {
     return "An error occurred while logging in.";
   }
 };
-
 
 export const updatePassword = async (userId, password) => {
   try {
