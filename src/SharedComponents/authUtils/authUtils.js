@@ -1,4 +1,5 @@
 // comments are written here
+// hello hello
 export const logoutUser = (setIsLoggedIn, setRole, navigate) => {
   sessionStorage.clear();
   setIsLoggedIn(false);
