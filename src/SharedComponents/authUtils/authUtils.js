@@ -8,6 +8,36 @@ export const logoutUser = (setIsLoggedIn, setRole, navigate) => {
 export const loginUser = async (email, password, onLogin, navigate) => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
+  // LOCAL BYPASS - Dummy credentials for local testing
+  const DUMMY_CREDENTIALS = [
+    { email: "admin@local.com", password: "admin123", role: "SADMIN", firstName: "Admin", lastName: "User", id: "1" },
+    { email: "hr@local.com", password: "hr123", role: "HR", firstName: "HR", lastName: "Manager", id: "2" },
+    { email: "employee@local.com", password: "emp123", role: "EMPLOYEE", firstName: "Test", lastName: "Employee", id: "3" },
+  ];
+
+  // Check if credentials match dummy credentials
+  const dummyUser = DUMMY_CREDENTIALS.find(
+    (user) => user.email === email && user.password === password
+  );
+
+  if (dummyUser) {
+    console.log("🔓 Using local bypass login with dummy credentials");
+
+    // Set session storage with dummy data
+    sessionStorage.setItem("token", "local-dummy-token-" + Date.now());
+    sessionStorage.setItem("firstName", dummyUser.firstName);
+    sessionStorage.setItem("lastName", dummyUser.lastName);
+    sessionStorage.setItem("role", dummyUser.role);
+    sessionStorage.setItem("id", dummyUser.id);
+    sessionStorage.setItem("tempPassword", "false");
+    sessionStorage.setItem("defaultCompanyId", "1");
+
+    onLogin(dummyUser.role);
+    navigate("/");
+    return null; // Success
+  }
+
+  // If not dummy credentials, proceed with real API call
   try {
     const response = await fetch(`${apiUrl}/auth/authenticate`, {
       method: "POST",
