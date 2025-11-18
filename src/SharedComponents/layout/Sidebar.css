@@ -169,3 +169,12 @@
 .modern-menu .ant-menu-submenu-title {
   width: calc(80% - 24px) !important;
 }
+
+.ant-btn-icon-only.logout-button {
+  padding: 10px;
+}
+
+.ant-btn.css-dev-only-do-not-override-17a39f8.ant-btn-text.ant-btn-icon-only.logout-button {
+  justify-content: center;
+  padding-right: 10px;
+}

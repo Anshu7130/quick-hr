@@ -81,17 +81,21 @@ const styles = {
   logoutContainer: {
     padding: "16px",
     borderTop: "1px solid #f0f0f0",
+    justifyContent: "center",
+    borderTop: "0px solid #f0f0f0",
   },
   logoutBtn: {
     color: "#6b7280",
     fontWeight: 500,
     width: "100%",
     borderRadius: "8px",
+    border: "10px",
     fontSize: "14px",
     height: "40px",
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
+    paddingRight: "10px",
+    justifyContent: "center",
   },
   collapseBtn: {
     position: "absolute",
