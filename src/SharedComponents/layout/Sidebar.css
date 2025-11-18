@@ -178,3 +178,15 @@
   justify-content: center;
   padding-right: 10px;
 }
+
+.modern-menu .ant-menu-item a {
+  text-decoration: none !important;
+}
+
+.modern-sidebar.ant-layout-sider-collapsed .ant-menu-item a {
+  pointer-events: none;
+}
+
+.modern-sidebar.ant-layout-sider-collapsed .ant-tooltip-inner {
+  text-decoration: none;
+}

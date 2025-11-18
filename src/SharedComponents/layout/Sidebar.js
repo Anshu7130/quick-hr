@@ -334,27 +334,28 @@ export default function SideBar({
         <Menu
           mode="inline"
           selectedKeys={[activeKey]}
-          items={[
-            ...(collapsed
-              ? [
-                  {
-                    key: "collapse-trigger",
-                    icon: <MenuUnfoldOutlined />,
-                    label: "",
-                    onClick: () => setCollapsed(false),
-                    style: { cursor: "pointer" },
-                  },
-                ]
-              : []),
-            ...items.map((item) => ({
-              key: item.key,
-              icon: item.icon,
-              label: <Link to={item.path}>{item.label}</Link>,
-            })),
-          ]}
           style={styles.menu}
           className="modern-menu"
-        />
+        >
+          {collapsed && (
+            <Menu.Item
+              key="collapse-trigger"
+              icon={<MenuUnfoldOutlined />}
+              onClick={() => setCollapsed(false)}
+              style={{ cursor: "pointer" }}
+            />
+          )}
+
+          {items.map((item) => (
+            <Menu.Item
+              key={item.key}
+              icon={item.icon}
+              title={collapsed ? item.label : undefined} // tooltip on hover only when collapsed
+            >
+              {!collapsed && <Link to={item.path}>{item.label}</Link>}
+            </Menu.Item>
+          ))}
+        </Menu>
 
         <div style={styles.logoutContainer}>
           <Button
