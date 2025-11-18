@@ -1,3 +1,4 @@
+// sidebar
 import React, { useState, useEffect } from "react";
 import { Layout, Menu, Typography, Button } from "antd";
 import {
@@ -350,7 +351,7 @@ export default function SideBar({
             <Menu.Item
               key={item.key}
               icon={item.icon}
-              title={collapsed ? item.label : undefined} // tooltip on hover only when collapsed
+              title={collapsed ? item.label : undefined}
             >
               {!collapsed && <Link to={item.path}>{item.label}</Link>}
             </Menu.Item>
