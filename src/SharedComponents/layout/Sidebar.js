@@ -15,6 +15,9 @@ import {
   FundOutlined,
   UserSwitchOutlined,
   PoweroffOutlined,
+  AppstoreOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -24,14 +27,185 @@ import "./Sidebar.css";
 const { Sider } = Layout;
 const { Text } = Typography;
 
-export default function SideBar({ setIsLoggedIn, setRole }) {
-  const roleFromSessionStorage = sessionStorage.getItem("role");
-  const role = roleFromSessionStorage ? roleFromSessionStorage.replace(/"/g, "") : "";
+const styles = {
+  sider: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    height: "100vh",
+    background: "#ffffff",
+    borderRight: "1px solid #f0f0f0",
+    overflowY: "auto",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  logo: {
+    padding: "20px 16px 16px",
+    borderBottom: "1px solid #f0f0f0",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "12px",
+    position: "relative",
+  },
+  logoIcon: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+    fontWeight: 700,
+    fontSize: "16px",
+  },
+  appName: {
+    color: "#1f2937",
+    fontSize: "16px",
+    fontWeight: 600,
+    marginTop: "4px",
+  },
+  userName: {
+    color: "#6b7280",
+    fontSize: "12px",
+    fontWeight: 400,
+  },
+  menu: {
+    background: "transparent",
+    flex: 1,
+    border: "none",
+    paddingTop: "16px",
+  },
+  logoutContainer: {
+    padding: "16px",
+    borderTop: "1px solid #f0f0f0",
+  },
+  logoutBtn: {
+    color: "#6b7280",
+    fontWeight: 500,
+    width: "100%",
+    borderRadius: "8px",
+    fontSize: "14px",
+    height: "40px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  collapseBtn: {
+    position: "absolute",
+    top: "16px",
+    right: "16px",
+    color: "#6b7280",
+    fontSize: "16px",
+    width: "32px",
+    height: "32px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    borderRadius: "6px",
+  },
+};
 
-  const firstName = sessionStorage.getItem("firstName")?.replace(/"/g, "") || "";
-  const lastName = sessionStorage.getItem("lastName")?.replace(/"/g, "") || "";
+const baseAdminMenu = [
+  {
+    key: "overview",
+    label: "Overview",
+    icon: <AppstoreOutlined />,
+    path: "/",
+  },
+  {
+    key: "companies",
+    label: "Companies",
+    icon: <ApartmentOutlined />,
+    path: "/companies",
+  },
+  {
+    key: "employees",
+    label: "Employees",
+    icon: <TeamOutlined />,
+    path: "/employees",
+  },
+  {
+    key: "purchase-orders",
+    label: "Purchase Orders",
+    icon: <FileTextOutlined />,
+    path: "/purchase-orders",
+  },
+  {
+    key: "projects",
+    label: "Projects",
+    icon: <ProjectOutlined />,
+    path: "/projects",
+  },
+  {
+    key: "visa-details",
+    label: "Visa Details",
+    icon: <IdcardOutlined />,
+    path: "/visa-details",
+  },
+  {
+    key: "announcements",
+    label: "Announcements",
+    icon: <NotificationOutlined />,
+    path: "/announcements",
+  },
+  {
+    key: "alltimeSheets",
+    label: "All TimeSheets",
+    icon: <ClockCircleOutlined />,
+    path: "/alltimeSheets",
+  },
+  {
+    key: "email-templates",
+    label: "Email Templates",
+    icon: <MailOutlined />,
+    path: "/email-templates",
+  },
+  {
+    key: "uploadedfiles",
+    label: "Files",
+    icon: <FileOutlined />,
+    path: "/uploadedfiles",
+  },
+  {
+    key: "email",
+    label: "Send Email",
+    icon: <ThunderboltOutlined />,
+    path: "/email",
+  },
+  {
+    key: "contacts",
+    label: "Contacts",
+    icon: <ContactsOutlined />,
+    path: "/contacts",
+  },
+  {
+    key: "bulkemail",
+    label: "Campaigns",
+    icon: <FundOutlined />,
+    path: "/bulkemail",
+  },
+];
 
-  const [collapsed, setCollapsed] = useState(false);
+export default function SideBar({
+  collapsed,
+  setCollapsed,
+  setIsLoggedIn,
+  setRole,
+}) {
+  const roleFromStorage = sessionStorage.getItem("role") || "";
+  const role = roleFromStorage.replace(/"/g, "");
+
+  const firstNameFromStorage = sessionStorage.getItem("firstName") || "";
+  const firstName = firstNameFromStorage.replace(/"/g, "");
+
+  const lastNameFromStorage = sessionStorage.getItem("lastName") || "";
+  const lastName = lastNameFromStorage.replace(/"/g, "");
+
+  const [activeKey, setActiveKey] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,62 +213,80 @@ export default function SideBar({ setIsLoggedIn, setRole }) {
     logoutUser(setIsLoggedIn, setRole, navigate);
   };
 
-  // ✅ Role-based menu items
   const menuItemsByRole = {
-    ADMIN: [
-      { key: "companies", label: "Companies", icon: <ApartmentOutlined />, path: "/companies" },
-      { key: "employees", label: "Employees", icon: <TeamOutlined />, path: "/employees" },
-      { key: "purchase-orders", label: "Purchase Orders", icon: <FileTextOutlined />, path: "/purchase-orders" },
-      { key: "projects", label: "Projects", icon: <ProjectOutlined />, path: "/projects" },
-      { key: "visa-details", label: "Visa Details", icon: <IdcardOutlined />, path: "/visa-details" },
-      { key: "announcements", label: "Announcements", icon: <NotificationOutlined />, path: "/announcements" },
-      { key: "alltimeSheets", label: "All TimeSheets", icon: <ClockCircleOutlined />, path: "/alltimeSheets" },
-      { key: "email-templates", label: "Email Templates", icon: <MailOutlined />, path: "/email-templates" },
-      { key: "uploadedfiles", label: "Files", icon: <FileOutlined />, path: "/uploadedfiles" },
-      { key: "email", label: "Send Email", icon: <ThunderboltOutlined />, path: "/email" },
-      { key: "contacts", label: "Contacts", icon: <ContactsOutlined />, path: "/contacts" },
-      { key: "bulkemail", label: "Campaigns", icon: <FundOutlined />, path: "/bulkemail" },
-    ],
+    ADMIN: baseAdminMenu,
     SADMIN: [
-      { key: "companies", label: "Companies", icon: <ApartmentOutlined />, path: "/companies" },
-      { key: "employees", label: "Employees", icon: <TeamOutlined />, path: "/employees" },
-      { key: "purchase-orders", label: "Purchase Orders", icon: <FileTextOutlined />, path: "/purchase-orders" },
-      { key: "projects", label: "Projects", icon: <ProjectOutlined />, path: "/projects" },
-      { key: "visa-details", label: "Visa Details", icon: <IdcardOutlined />, path: "/visa-details" },
-      { key: "announcements", label: "Announcements", icon: <NotificationOutlined />, path: "/announcements" },
-      { key: "alltimeSheets", label: "All TimeSheets", icon: <ClockCircleOutlined />, path: "/alltimeSheets" },
-      { key: "email-templates", label: "Email Templates", icon: <MailOutlined />, path: "/email-templates" },
-      { key: "uploadedfiles", label: "Files", icon: <FileOutlined />, path: "/uploadedfiles" },
-      { key: "email", label: "Send Email", icon: <ThunderboltOutlined />, path: "/email" },
-      { key: "contacts", label: "Contacts", icon: <ContactsOutlined />, path: "/contacts" },
-      { key: "bulkemail", label: "Campaigns", icon: <FundOutlined />, path: "/bulkemail" },
-      { key: "companyrole", label: "User Role", icon: <UserSwitchOutlined />, path: "/companyrole" },
+      ...baseAdminMenu,
+      {
+        key: "companyrole",
+        label: "User Role",
+        icon: <UserSwitchOutlined />,
+        path: "/companyrole",
+      },
     ],
     EMPLOYEE: [
-      { key: "timeSheets", label: "Monthly Time Sheets", icon: <ClockCircleOutlined />, path: "/timeSheets" },
-      { key: "weeklytimeSheets", label: "Weekly Time Sheets", icon: <ClockCircleOutlined />, path: "/weeklytimeSheets" },
-      { key: "trackings", label: "WithHold Tracking", icon: <FundOutlined />, path: "/trackings" },
-      { key: "withholdSheet", label: "WithHold Sheet", icon: <FileTextOutlined />, path: "/withholdSheet" },
-      { key: "myfiles", label: "Files", icon: <FileOutlined />, path: "/myfiles" },
-      { key: "announcements", label: "Announcements", icon: <NotificationOutlined />, path: "/announcements" },
-      { key: "contactus", label: "Contact Us", icon: <ContactsOutlined />, path: "/contactus" },
+      {
+        key: "overview",
+        label: "Overview",
+        icon: <AppstoreOutlined />,
+        path: "/",
+      },
+      {
+        key: "timeSheets",
+        label: "Monthly Time Sheets",
+        icon: <ClockCircleOutlined />,
+        path: "/timeSheets",
+      },
+      {
+        key: "weeklytimeSheets",
+        label: "Weekly Time Sheets",
+        icon: <ClockCircleOutlined />,
+        path: "/weeklytimeSheets",
+      },
+      {
+        key: "trackings",
+        label: "WithHold Tracking",
+        icon: <FundOutlined />,
+        path: "/trackings",
+      },
+      {
+        key: "withholdSheet",
+        label: "WithHold Sheet",
+        icon: <FileTextOutlined />,
+        path: "/withholdSheet",
+      },
+      {
+        key: "myfiles",
+        label: "Files",
+        icon: <FileOutlined />,
+        path: "/myfiles",
+      },
+      {
+        key: "announcements",
+        label: "Announcements",
+        icon: <NotificationOutlined />,
+        path: "/announcements",
+      },
+      {
+        key: "contactus",
+        label: "Contact Us",
+        icon: <ContactsOutlined />,
+        path: "/contactus",
+      },
     ],
   };
 
   const items = menuItemsByRole[role] || [];
 
-  // ✅ Handle active menu highlight
-  const [activeKey, setActiveKey] = useState("");
-
   useEffect(() => {
     const currentPath = location.pathname;
 
-    // If on dashboard ("/"), don't highlight anything
     if (currentPath === "/") {
-      setActiveKey("");
+      setActiveKey("overview");
     } else {
-      // Find the first matching menu item by its path
-      const matchedItem = items.find((item) => currentPath.startsWith(item.path));
+      const matchedItem = items.find(
+        (item) => currentPath.startsWith(item.path) && item.path !== "/"
+      );
       setActiveKey(matchedItem ? matchedItem.key : "");
     }
   }, [location.pathname, items]);
@@ -111,94 +303,67 @@ export default function SideBar({ setIsLoggedIn, setRole }) {
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        width={230}
+        width={240}
         style={styles.sider}
+        className="modern-sidebar"
+        trigger={null}
       >
-        {/* ✅ Logo and Name */}
         <div style={styles.logo}>
-          <Text style={{ color: "white", fontWeight: 600 }}>
-            {collapsed ? "ZP" : "Zeno HR & Pay"}
-          </Text>
+          <div style={styles.logoIcon}>ZP</div>
           {!collapsed && (
-            <Text style={styles.userName}>
-              {firstName} {lastName}
-            </Text>
+            <div className="sidebar-text-content">
+              <Text style={styles.appName}>Zeno HR & Pay</Text>
+            </div>
+          )}
+
+          {!collapsed && (
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={styles.collapseBtn}
+              className="collapse-trigger sidebar-text-content"
+            />
           )}
         </div>
 
-        {/* ✅ Menu Items */}
         <Menu
-          theme="dark"
           mode="inline"
-          selectedKeys={[activeKey]} // ✅ Dynamically highlight
-          items={items.map((item) => ({
-            key: item.key,
-            icon: item.icon,
-            label: <Link to={item.path}>{item.label}</Link>,
-          }))}
+          selectedKeys={[activeKey]}
+          items={[
+            ...(collapsed
+              ? [
+                  {
+                    key: "collapse-trigger",
+                    icon: <MenuUnfoldOutlined />,
+                    label: "",
+                    onClick: () => setCollapsed(false),
+                    style: { cursor: "pointer" },
+                  },
+                ]
+              : []),
+            ...items.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: <Link to={item.path}>{item.label}</Link>,
+            })),
+          ]}
           style={styles.menu}
+          className="modern-menu"
         />
 
-        {/* ✅ Logout Button */}
         <div style={styles.logoutContainer}>
           <Button
             type="text"
-            icon={<PoweroffOutlined style={{ color: "#fff" }} />}
+            icon={<PoweroffOutlined />}
             onClick={handleLogout}
             style={styles.logoutBtn}
+            className="logout-button"
           >
-            {!collapsed && "Logout"}
+            {!collapsed && <span className="sidebar-text-content">Logout</span>}
           </Button>
         </div>
       </Sider>
     </motion.div>
   );
 }
-
-const styles = {
-  sider: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    height: "100vh",
-    background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
-    boxShadow: "2px 0 12px rgba(0,0,0,0.1)",
-    overflowY: "auto",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  logo: {
-    textAlign: "center",
-    padding: "18px 0",
-    fontSize: "18px",
-    letterSpacing: "0.5px",
-    background: "rgba(255,255,255,0.1)",
-    borderBottom: "1px solid rgba(255,255,255,0.15)",
-  },
-  userName: {
-    marginTop: 4,
-    display: "block",
-    color: "#f0f0f0",
-    fontSize: 14,
-    fontWeight: 500,
-    letterSpacing: 0.3,
-  },
-  menu: {
-    background: "transparent",
-    flex: 1,
-  },
-  logoutContainer: {
-    textAlign: "center",
-    padding: "15px 0",
-    borderTop: "1px solid rgba(255,255,255,0.2)",
-  },
-  logoutBtn: {
-    color: "#fff",
-    fontWeight: 600,
-    width: "100%",
-    borderRadius: 0,
-    fontSize: 15,
-    background: "transparent",
-  },
-};

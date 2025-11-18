@@ -1,7 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import "../src/App.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 // Shared Components
 import Sidebar from "./SharedComponents/layout/Sidebar";
@@ -66,6 +73,7 @@ function App() {
   const [role, setRole] = useSessionStorage("role", "");
   const location = useLocation();
   const navigate = useNavigate();
+  const [collapsed, setCollapsed] = React.useState(false);
 
   // ✅ Handle login and session restore
   const handleLogin = (userRole) => {
@@ -87,7 +95,9 @@ function App() {
 
     // If not logged in and not already on login/forgot/change-password → redirect
     const authPaths = ["/login", "/forgot-password", "/change-password"];
-    const onAuthPage = authPaths.some((path) => location.pathname.includes(path));
+    const onAuthPage = authPaths.some((path) =>
+      location.pathname.includes(path)
+    );
 
     if (!isLoggedIn && !onAuthPage) {
       navigate("/login", { replace: true });
@@ -107,15 +117,22 @@ function App() {
       {/* ✅ Sidebar layout (visible only when logged in and not on auth pages) */}
       {isLoggedIn && !isAuthPage ? (
         <div style={{ display: "flex", minHeight: "100vh" }}>
-          <Sidebar setIsLoggedIn={setIsLoggedIn} setRole={setRole} />
+          <Sidebar
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+            setIsLoggedIn={setIsLoggedIn}
+            setRole={setRole}
+          />
+
           <div
             style={{
               flex: 1,
-              marginLeft: 230,
+              marginLeft: collapsed ? 80 : 240, // <-- updated
               backgroundColor: "#f8f9fa",
               overflowX: "auto",
               display: "flex",
               flexDirection: "column",
+              transition: "margin-left 0.2s ease",
             }}
           >
             {shouldRenderBreadcrumb() && <Breadcrumbs />}
@@ -152,7 +169,10 @@ function App() {
           <>
             <Route path="/" element={<Dashboard />} />
             <Route path="/company/:companyId" element={<CompanyEmployees />} />
-            <Route path="/profit-loss/:employeeId" element={<ProfitAndLoss />} />
+            <Route
+              path="/profit-loss/:employeeId"
+              element={<ProfitAndLoss />}
+            />
             <Route path="/announcements" element={<AnnouncementGrid />} />
             <Route path="/addannouncements" element={<AnnouncementForm />} />
             <Route path="/apply-leave" element={<LeaveApplicationForm />} />
@@ -176,7 +196,10 @@ function App() {
               path="/orders/:employeeId/addorder"
               element={<PurchaseOrderForm mode="add" />}
             />
-            <Route path="/tracking/:employeeId" element={<WithHoldTracking />} />
+            <Route
+              path="/tracking/:employeeId"
+              element={<WithHoldTracking />}
+            />
             <Route
               path="/tracking/:employeeId/:trackingId/edittracking"
               element={<WithHoldTrackingForm mode="edit" />}
@@ -232,7 +255,10 @@ function App() {
             <Route path="/email" element={<EmailForm />} />
             <Route path="/bulkemail" element={<BulkMailForm />} />
             <Route path="/candidates" element={<CandidateList />} />
-            <Route path="/addcandidate" element={<CandidateForm mode="add" />} />
+            <Route
+              path="/addcandidate"
+              element={<CandidateForm mode="add" />}
+            />
             <Route
               path="/editcandidate/:candidateID"
               element={<CandidateForm mode="edit" />}
@@ -307,7 +333,10 @@ function App() {
           <>
             <Route path="/" element={<RecruiterDashboard />} />
             <Route path="/candidates" element={<CandidateList />} />
-            <Route path="/addcandidate" element={<CandidateForm mode="add" />} />
+            <Route
+              path="/addcandidate"
+              element={<CandidateForm mode="add" />}
+            />
             <Route
               path="/editcandidate/:candidateID"
               element={<CandidateForm mode="edit" />}
