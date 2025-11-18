@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Input, Button, Alert, Typography, Card, Space } from "antd";
-import { MailOutlined } from "@ant-design/icons";
+import { useNavigate, Link } from "react-router-dom";
+import { Form, Input, Button, Alert, Typography, Space } from "antd";
+import { motion } from "framer-motion";
 import { post } from "../httpClient ";
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -37,30 +37,22 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        background: "#f5f6fa",
-        padding: "20px",
-      }}
-    >
-      <Card
-        title={
-          <Title level={3} style={{ textAlign: "center", marginBottom: 0 }}>
-            Forgot Password?
-          </Title>
-        }
-        style={{
-          maxWidth: 420,
-          width: "100%",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-          borderRadius: 12,
-        }}
+    <div style={styles.container}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={styles.formContainer}
       >
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Title level={1} style={styles.title}>
+          Forgot Password?
+        </Title>
+        <Text style={styles.subtitle}>
+          Don't worry. Resetting your password is easy — just tell us the email address you registered with{" "}
+          <strong>Zeno HR</strong>.
+        </Text>
+
+        <Space direction="vertical" size="middle" style={{ width: "100%", marginTop: 32 }}>
           {error && (
             <Alert
               message={error}
@@ -81,14 +73,9 @@ export default function ForgotPassword() {
             />
           )}
 
-          <Paragraph style={{ textAlign: "center" }}>
-            Don’t worry. Resetting your password is easy — just tell us the email address you registered with{" "}
-            <Text strong>ZenoPay</Text>.
-          </Paragraph>
-
-          <Form layout="vertical" onFinish={handleForgotPassword}>
+          <Form layout="vertical" onFinish={handleForgotPassword} requiredMark={false}>
             <Form.Item
-              label="Email Address"
+              label={<span style={styles.label}>E-mail Address</span>}
               name="email"
               rules={[
                 { required: true, message: "Please enter your email address" },
@@ -97,10 +84,10 @@ export default function ForgotPassword() {
             >
               <Input
                 size="large"
-                prefix={<MailOutlined />}
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
               />
             </Form.Item>
 
@@ -110,21 +97,80 @@ export default function ForgotPassword() {
                 htmlType="submit"
                 size="large"
                 block
-                style={{ borderRadius: 6 }}
+                style={styles.resetBtn}
               >
                 Reset Password
               </Button>
             </Form.Item>
           </Form>
 
-          <div style={{ textAlign: "center" }}>
-            <Text type="secondary">
+          <div style={styles.backToLogin}>
+            <Text style={{ color: "#6b7280" }}>
               Remembered your password?{" "}
-              <a onClick={() => navigate("/login")}>Back to Login</a>
+              <Link to="/login" style={styles.loginLink}>
+                Back to Login
+              </Link>
             </Text>
           </div>
         </Space>
-      </Card>
+      </motion.div>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    background: "#ffffff",
+    padding: "40px 20px",
+  },
+  formContainer: {
+    width: "100%",
+    maxWidth: "420px",
+  },
+  title: {
+    color: "#1e3a8a",
+    fontSize: "2.5rem",
+    fontWeight: 600,
+    marginBottom: "12px",
+  },
+  subtitle: {
+    color: "#6b7280",
+    fontSize: "1rem",
+    lineHeight: 1.6,
+  },
+  label: {
+    color: "#1e3a8a",
+    fontSize: "0.9rem",
+    fontWeight: 500,
+  },
+  input: {
+    padding: "12px 16px",
+    border: "2px solid #e5e7eb",
+    borderRadius: "6px",
+    fontSize: "1rem",
+  },
+  resetBtn: {
+    width: "100%",
+    padding: "14px",
+    background: "#1e40af",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "1rem",
+    fontWeight: 500,
+    height: "48px",
+  },
+  backToLogin: {
+    textAlign: "center",
+    fontSize: "0.9rem",
+  },
+  loginLink: {
+    color: "#1e3a8a",
+    textDecoration: "none",
+    fontWeight: 600,
+  },
+};
